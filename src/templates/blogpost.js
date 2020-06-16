@@ -5,7 +5,6 @@ import styled from "styled-components"
 import Layout from "../components/layout"
 import { Title, Date } from "../components/typography"
 import SEO from "../components/seo"
-import Comments from "../components/comments"
 
 const Container = styled.div`
   max-width: 700px;
@@ -31,7 +30,6 @@ export default function Template({
           <Date>{frontmatter.date}</Date>
           <Content dangerouslySetInnerHTML={{ __html: html }} />
         </Post>
-        <Comments post={frontmatter} />
       </Container>
     </Layout>
   )

@@ -5,7 +5,6 @@ import styled from "styled-components"
 import Layout from "../components/layout"
 import { Title, Date } from "../components/typography"
 import SEO from "../components/seo"
-import Comments from "../components/comments"
 
 import BackgroundImage from 'gatsby-background-image'
 import media from "styled-media-query";
@@ -32,18 +31,15 @@ const Content = styled.div`
 margin: 0;
 `
 
-const Cover = ({ className, image, children }) => {
-  console.log(className, image)
-  return (
-    <BackgroundImage
-      Tag="div"
-      fluid={image}
-      className={className}
-    >
-      {children}
-    </BackgroundImage>
-  )
-}
+const Cover = ({ className, image, children }) => (
+  <BackgroundImage
+    Tag="div"
+    fluid={image}
+    className={className}
+  >
+    {children}
+  </BackgroundImage>
+)
 
 const StyledCover = styled(Cover)`
 width: 100 %;
@@ -103,7 +99,6 @@ export default function Template({
           {!frontmatter.coverImage && <Date>{frontmatter.date}</Date>}
           <Content dangerouslySetInnerHTML={{ __html: html }} />
         </Post>
-        {frontmatter.comments && <Comments post={frontmatter} />}
       </Container>
     </Layout>
   )

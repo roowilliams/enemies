@@ -9,6 +9,10 @@ const StyledLink = styled(Link)`
   text-decoration: none;
   color: rgba(0, 0, 0, 0.8);
 `
+const StyledExternalLink = styled.a`
+text-decoration: none;
+color: rgba(0, 0, 0, 0.8);
+`
 const Container = styled.div`
   margin-bottom: 3rem;
   display: flex;
@@ -33,6 +37,8 @@ width: 200px;
 const StyledImg = styled(Img)`
     `
 
+const LinkHandler = ({ to, children }) => to.includes("://") ? <StyledExternalLink href="post.frontmatter.path" target="_blank">{children}</StyledExternalLink> : <StyledLink>{children}</StyledLink>
+
 const PostLink = ({ post }) => {
   let featuredImgFluid = post.frontmatter.featuredImage ? post.frontmatter.featuredImage.childImageSharp.fluid : false
   return (
@@ -47,7 +53,7 @@ const PostLink = ({ post }) => {
           <Summary>{post.excerpt}</Summary>
         </StyledLink>
       </Content>
-      {featuredImgFluid && <StyledLink to={post.frontmatter.path}><ImageContainer><StyledImg fluid={featuredImgFluid} /></ImageContainer></StyledLink>}
+      {featuredImgFluid && <LinkHandler to={post.frontmatter.path}><ImageContainer><StyledImg fluid={featuredImgFluid} /></ImageContainer></LinkHandler>}
 
     </Container>
   )
@@ -55,3 +61,4 @@ const PostLink = ({ post }) => {
 
 
 export default PostLink
+

@@ -8,6 +8,12 @@ import PostLink from "../components/postlink"
 import { Section } from "../components/common"
 import { SectionHeader, SectionLink } from "../components/typography"
 
+import moment from "moment"
+
+const mediumUrl = `https://medium.com/enemies-studio/`
+// const mediumCDNUrl = `https://cdn-images-1.medium.com/max/150/`
+// src={`${mediumCDNUrl}/${post.node.virtuals.previewImage.imageId}`}
+
 const getPosts = (edges, postType) =>
   edges
     .filter(
@@ -18,15 +24,32 @@ const getPosts = (edges, postType) =>
         !!edge.node.frontmatter.date &&
         edge.node.frontmatter.publish
     )
-    .map(edge => <PostLink key={edge.node.id} post={edge.node} />)
+
+
+const renderPosts = (posts) => posts.map(post => <PostLink key={post.node.id} post={post.node} />)
+
+const normalizeMediumPosts = (edges) => edges.map(edge => ({
+  node: {
+    ...edge.node, frontmatter: {
+      title: edge.node.title,
+      path: `${mediumUrl}${edge.node.uniqueSlug}`,
+      date: moment(edge.node.createdAt, "YYYY-MM-DD").format("MMM DD YYYY")
+    }
+  },
+
+}))
 
 const IndexPage = ({
   data: {
-    allMarkdownRemark: { edges },
+    allMarkdownRemark,
+    allMediumPost
   },
 }) => {
-  const blogPosts = getPosts(edges, "blog").slice(0, 2)
-  const projects = getPosts(edges, "project")
+  const blogPosts = normalizeMediumPosts(allMediumPost.edges)
+  const projects = getPosts(allMarkdownRemark.edges, "project")
+  console.log(blogPosts)
+  console.log(allMediumPost.edges)
+  console.log(projects)
 
   return (
     <Layout>
@@ -34,13 +57,13 @@ const IndexPage = ({
       {
         !!projects.length && <Section>
           <SectionHeader>Projects</SectionHeader>
-          {projects}
+          {renderPosts(projects)}
         </Section>
       }
       {!!blogPosts.length &&
         <Section>
           <SectionHeader>Recent Blog Posts</SectionHeader>
-          {blogPosts}
+          {renderPosts(blogPosts)}
           <SectionLink
             to="/blog/"
           >View blog</SectionLink>
@@ -72,6 +95,25 @@ export const pageQuery = graphql`
                 }
               }
             }
+          }
+        }
+      }
+    }
+    allMediumPost(sort: { fields: [createdAt], order: DESC }) {
+      edges {
+        node {
+          id
+          title
+          createdAt
+          uniqueSlug
+          virtuals {
+            subtitle
+            previewImage {
+              imageId
+            }
+          }
+          author {
+            name
           }
         }
       }
