@@ -8,7 +8,32 @@
 
 // below from https://www.gatsbyjs.org/docs/adding-markdown-pages/
 const path = require(`path`)
-const { createFilePath } = require(`gatsby-source-filesystem`)
+const { createFilePath, createRemoteFileNode } = require(`gatsby-source-filesystem`)
+
+const mediumCDNUrl = `https://cdn-images-1.medium.com/max/800/`
+const mediumUrl = `https://medium.com/enemies-studio/`
+
+
+exports.createSchemaCustomization = ({ actions }) => {
+  const { createTypes } = actions
+  createTypes(`
+    type MarkdownRemark implements Node {
+      frontmatter: Frontmatter
+      featuredImage: File @link(from: "featuredImage___NODE")
+      slug: String
+    }
+    type MediumPost implements Node {
+      frontmatter: Frontmatter
+      featuredImage: File @link(from: "featuredImage___NODE")
+      externalUrl: String
+    }
+    type Frontmatter {
+      title: String!
+      featuredImageUrl: String
+      featuredImageAlt: String
+    }
+  `)
+}
 
 exports.createPages = async ({ actions, graphql, reporter }) => {
   const { createPage, createNodeField } = actions
@@ -26,6 +51,19 @@ exports.createPages = async ({ actions, graphql, reporter }) => {
           node {
             frontmatter {
               path
+            }
+          }
+        }
+      }
+      allMediumPost(sort: { fields: [createdAt], order: DESC }) {
+        edges {
+          node {
+            createdAt
+            uniqueSlug
+            virtuals {
+              previewImage {
+                imageId
+              }
             }
           }
         }
@@ -63,8 +101,9 @@ exports.createPages = async ({ actions, graphql, reporter }) => {
   })
 }
 
-exports.onCreateNode = ({ node, actions, getNode }) => {
-  const { createNodeField } = actions
+exports.onCreateNode = async ({ node, actions: { createNode, createNodeField }, getNode, store,
+  cache, createNodeId }) => {
+
   if (node.internal.type === `MarkdownRemark`) {
     const value = createFilePath({ node, getNode })
     createNodeField({
@@ -72,6 +111,33 @@ exports.onCreateNode = ({ node, actions, getNode }) => {
       node,
       value,
     })
+  }
+  if (node.internal.type === `MediumPost`) {
+    console.log('url', `${mediumUrl}${node.uniqueSlug}`)
+    createNodeField({
+      name: `externalUrl`,
+      node,
+      value: `${mediumUrl}${node.uniqueSlug}`
+    })
+    if (node.virtuals.previewImage.imageId) {
+      console.log('image url', `${mediumCDNUrl}${node.virtuals.previewImage.imageId}`)
+      let fileNode = await createRemoteFileNode({
+        url: `${mediumCDNUrl}${node.virtuals.previewImage.imageId}`, // string that points to the URL of the image
+        // if necessary!
+        ext: ".jpg",
+        name: "image",
+        parentNodeId: node.id, // id of the parent node of the fileNode you are going to create
+        createNode, // helper function in gatsby-node to generate the node
+        createNodeId, // helper function in gatsby-node to generate the node id
+        cache, // Gatsby's cache
+        store, // Gatsby's redux store
+      })
+
+      // if the file was created, attach the new node to the parent node
+      if (fileNode) {
+        node.featuredImage___NODE = fileNode.id
+      }
+    }
   }
 }
 

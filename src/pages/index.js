@@ -10,7 +10,7 @@ import { SectionHeader, SectionLink } from "../components/typography"
 
 import moment from "moment"
 
-const mediumUrl = `https://medium.com/enemies-studio/`
+
 // const mediumCDNUrl = `https://cdn-images-1.medium.com/max/150/`
 // src={`${mediumCDNUrl}/${post.node.virtuals.previewImage.imageId}`}
 
@@ -32,7 +32,6 @@ const normalizeMediumPosts = (edges) => edges.map(edge => ({
   node: {
     ...edge.node, frontmatter: {
       title: edge.node.title,
-      path: `${mediumUrl}${edge.node.uniqueSlug}`,
       date: moment(edge.node.createdAt, "YYYY-MM-DD").format("MMM DD YYYY")
     }
   },
@@ -45,11 +44,9 @@ const IndexPage = ({
     allMediumPost
   },
 }) => {
+  console.log(allMediumPost)
   const blogPosts = normalizeMediumPosts(allMediumPost.edges)
   const projects = getPosts(allMarkdownRemark.edges, "project")
-  console.log(blogPosts)
-  console.log(allMediumPost.edges)
-  console.log(projects)
 
   return (
     <Layout>
@@ -105,12 +102,18 @@ export const pageQuery = graphql`
           id
           title
           createdAt
-          uniqueSlug
+          fields { 
+            externalUrl
+          }
+          featuredImage {
+            childImageSharp {
+              fluid(maxWidth: 800) {
+                ...GatsbyImageSharpFluid
+              }
+            }
+          }
           virtuals {
             subtitle
-            previewImage {
-              imageId
-            }
           }
           author {
             name

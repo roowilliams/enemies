@@ -37,24 +37,29 @@ width: 200px;
 const StyledImg = styled(Img)`
     `
 
-const LinkHandler = ({ to, children }) => to.includes("://") ? <StyledExternalLink href="post.frontmatter.path" target="_blank">{children}</StyledExternalLink> : <StyledLink>{children}</StyledLink>
+const LinkHandler = ({ fields, frontmatter, children }) => fields && fields.externalUrl ? <StyledExternalLink href={fields.externalUrl} target="_blank">{children}</StyledExternalLink> : <StyledLink to={frontmatter.path}>{children}</StyledLink>
 
+const getFeaturedImage = (post) => {
+  if (post.frontmatter.featuredImage) return post.frontmatter.featuredImage.childImageSharp.fluid
+
+  if (post.featuredImage) return post.featuredImage.childImageSharp.fluid
+  else return false
+}
 const PostLink = ({ post }) => {
-  let featuredImgFluid = post.frontmatter.featuredImage ? post.frontmatter.featuredImage.childImageSharp.fluid : false
+  const featuredImgFluid = getFeaturedImage(post)
   return (
     <Container>
       <Content>
-        <StyledLink to={post.frontmatter.path}>
+        <LinkHandler {...post}>
           <Title>{post.frontmatter.title}</Title>
-        </StyledLink>
+        </LinkHandler>
         <Date>{post.frontmatter.date}</Date>
 
-        <StyledLink to={post.frontmatter.path}>
+        <LinkHandler {...post}>
           <Summary>{post.excerpt}</Summary>
-        </StyledLink>
+        </LinkHandler>
       </Content>
-      {featuredImgFluid && <LinkHandler to={post.frontmatter.path}><ImageContainer><StyledImg fluid={featuredImgFluid} /></ImageContainer></LinkHandler>}
-
+      {featuredImgFluid && <LinkHandler {...post}><ImageContainer><StyledImg fluid={featuredImgFluid} /></ImageContainer></LinkHandler>}
     </Container>
   )
 }
