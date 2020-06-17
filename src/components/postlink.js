@@ -56,7 +56,7 @@ const PostLink = ({ post }) => {
         <Date>{post.frontmatter.date}</Date>
 
         <LinkHandler {...post}>
-          <Summary>{post.excerpt}</Summary>
+          <Summary>{post.excerpt || post.content.subtitle}</Summary>
         </LinkHandler>
       </Content>
       {featuredImgFluid && <LinkHandler {...post}><ImageContainer><StyledImg fluid={featuredImgFluid} /></ImageContainer></LinkHandler>}

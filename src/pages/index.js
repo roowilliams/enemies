@@ -102,6 +102,9 @@ export const pageQuery = graphql`
           id
           title
           createdAt
+          content {
+            subtitle
+          }
           fields { 
             externalUrl
           }
@@ -114,6 +117,7 @@ export const pageQuery = graphql`
           }
           virtuals {
             subtitle
+            metaDescription
           }
           author {
             name
