@@ -7,43 +7,38 @@ import Layout from "../components/layout"
 import PostLink from "../components/postlink"
 import { Section } from "../components/common"
 import { SectionHeader, SectionLink } from "../components/typography"
-
+import Intro from "../components/intro"
 import moment from "moment"
-
 
 // const mediumCDNUrl = `https://cdn-images-1.medium.com/max/150/`
 // src={`${mediumCDNUrl}/${post.node.virtuals.previewImage.imageId}`}
 
 const getPosts = (edges, postType) =>
-  edges
-    .filter(
-      edge =>
-        // eslint-disable-next-line
-        edge.node.frontmatter.path.match(/^\/([^\/]*).*$/, "$1")[1] ===
+  edges.filter(
+    edge =>
+      // eslint-disable-next-line
+      edge.node.frontmatter.path.match(/^\/([^\/]*).*$/, "$1")[1] ===
         postType &&
-        !!edge.node.frontmatter.date &&
-        edge.node.frontmatter.publish
-    )
+      !!edge.node.frontmatter.date &&
+      edge.node.frontmatter.publish
+  )
 
+const renderPosts = posts =>
+  posts.map(post => <PostLink key={post.node.id} post={post.node} />)
 
-const renderPosts = (posts) => posts.map(post => <PostLink key={post.node.id} post={post.node} />)
+const normalizeMediumPosts = edges =>
+  edges.map(edge => ({
+    node: {
+      ...edge.node,
+      frontmatter: {
+        title: edge.node.title,
+        date: moment(edge.node.createdAt, "YYYY-MM-DD").format("MMM DD YYYY"),
+        externalUrl: edge.node.fields.externalUrl,
+      },
+    },
+  }))
 
-const normalizeMediumPosts = (edges) => edges.map(edge => ({
-  node: {
-    ...edge.node, frontmatter: {
-      title: edge.node.title,
-      date: moment(edge.node.createdAt, "YYYY-MM-DD").format("MMM DD YYYY")
-    }
-  },
-
-}))
-
-const IndexPage = ({
-  data: {
-    allMarkdownRemark,
-    allMediumPost
-  },
-}) => {
+const IndexPage = ({ data: { allMarkdownRemark, allMediumPost } }) => {
   console.log(allMediumPost)
   const blogPosts = normalizeMediumPosts(allMediumPost.edges)
   const projects = getPosts(allMarkdownRemark.edges, "project")
@@ -51,22 +46,20 @@ const IndexPage = ({
   return (
     <Layout>
       <SEO />
-      {
-        !!projects.length && <Section>
+      <Intro />
+      {!!projects.length && (
+        <Section>
           <SectionHeader>Projects</SectionHeader>
           {renderPosts(projects)}
         </Section>
-      }
-      {!!blogPosts.length &&
+      )}
+      {!!blogPosts.length && (
         <Section>
           <SectionHeader>Recent Blog Posts</SectionHeader>
           {renderPosts(blogPosts)}
-          <SectionLink
-            to="/blog/"
-          >View blog</SectionLink>
+          <SectionLink to="/blog/">View blog</SectionLink>
         </Section>
-      }
-
+      )}
     </Layout>
   )
 }
@@ -105,7 +98,7 @@ export const pageQuery = graphql`
           content {
             subtitle
           }
-          fields { 
+          fields {
             externalUrl
           }
           featuredImage {
