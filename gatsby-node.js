@@ -8,11 +8,13 @@
 
 // below from https://www.gatsbyjs.org/docs/adding-markdown-pages/
 const path = require(`path`)
-const { createFilePath, createRemoteFileNode } = require(`gatsby-source-filesystem`)
+const {
+  createFilePath,
+  createRemoteFileNode,
+} = require(`gatsby-source-filesystem`)
 
 const mediumCDNUrl = `https://cdn-images-1.medium.com/max/800/`
 const mediumUrl = `https://medium.com/enemies-studio/`
-
 
 exports.createSchemaCustomization = ({ actions }) => {
   const { createTypes } = actions
@@ -29,6 +31,7 @@ exports.createSchemaCustomization = ({ actions }) => {
     }
     type Frontmatter {
       title: String!
+      motivator: String
       featuredImageUrl: String
       featuredImageAlt: String
     }
@@ -101,9 +104,14 @@ exports.createPages = async ({ actions, graphql, reporter }) => {
   })
 }
 
-exports.onCreateNode = async ({ node, actions: { createNode, createNodeField }, getNode, store,
-  cache, createNodeId }) => {
-
+exports.onCreateNode = async ({
+  node,
+  actions: { createNode, createNodeField },
+  getNode,
+  store,
+  cache,
+  createNodeId,
+}) => {
   if (node.internal.type === `MarkdownRemark`) {
     const value = createFilePath({ node, getNode })
     createNodeField({
@@ -113,14 +121,17 @@ exports.onCreateNode = async ({ node, actions: { createNode, createNodeField }, 
     })
   }
   if (node.internal.type === `MediumPost`) {
-    console.log('url', `${mediumUrl}${node.uniqueSlug}`)
+    console.log("url", `${mediumUrl}${node.uniqueSlug}`)
     createNodeField({
       name: `externalUrl`,
       node,
-      value: `${mediumUrl}${node.uniqueSlug}`
+      value: `${mediumUrl}${node.uniqueSlug}`,
     })
     if (node.virtuals.previewImage.imageId) {
-      console.log('image url', `${mediumCDNUrl}${node.virtuals.previewImage.imageId}`)
+      console.log(
+        "image url",
+        `${mediumCDNUrl}${node.virtuals.previewImage.imageId}`
+      )
       let fileNode = await createRemoteFileNode({
         url: `${mediumCDNUrl}${node.virtuals.previewImage.imageId}`, // string that points to the URL of the image
         // if necessary!

@@ -10,8 +10,7 @@ const Container = styled.header`
 `
 
 const Name = styled.h1`
-  font-family: "Open Sans", sans-serif;
-  font-weight: 700;
+  font-weight: 900;
   font-size: 1rem;
   letter-spacing: 0.5px;
   margin: 0 2rem;
@@ -25,11 +24,27 @@ const NavList = styled.ul`
   display: flex;
 `
 const NavItem = styled.li`
-margin: 0 1rem;
+  margin: 0 1rem;
+
+  a {
+    color: black;
+    text-decoration: none;
+    padding: 0.2rem 0.5rem;
+
+    &:hover {
+      border-bottom: 2px solid black;
+    }
+  }
 `
 
 const Nav = ({ links }) => (
-  <NavList>{links.map(link => <NavItem key={link.name}>{link.name}</NavItem>)}</NavList>
+  <NavList>
+    {links.map(link => (
+      <NavItem key={link.name}>
+        <Link to={link.link}>{link.name}</Link>
+      </NavItem>
+    ))}
+  </NavList>
 )
 
 const Header = ({ siteTitle }) => (

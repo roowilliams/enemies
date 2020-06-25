@@ -39,7 +39,6 @@ const normalizeMediumPosts = edges =>
   }))
 
 const IndexPage = ({ data: { allMarkdownRemark, allMediumPost } }) => {
-  console.log(allMediumPost)
   const blogPosts = normalizeMediumPosts(allMediumPost.edges)
   const projects = getPosts(allMarkdownRemark.edges, "project")
 
@@ -78,6 +77,7 @@ export const pageQuery = graphql`
             path
             title
             publish
+            motivator
             featuredImage {
               childImageSharp {
                 fluid(maxWidth: 800) {

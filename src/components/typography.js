@@ -5,8 +5,11 @@ import RightArrow from "../../static/right-arrow.svg"
 
 // doesn't apply to markdown pages since only html tags are generated
 export const Title = styled.h1`
-  color: rgba(0, 0, 0, 0.8);
+  color: rgba(0, 0, 0, 0.9);
   margin-bottom: 0.6rem;
+  font-weight: 900;
+  font-size: 4rem;
+  line-height: 1;
 `
 
 export const Date = styled.time`
@@ -25,20 +28,22 @@ export const Statement = styled.p`
   font-size: 4.8rem;
   font-weight: 900;
   margin-bottom: 0.2rem;
-  line-height: 0.9;
-  color: rgba(0, 0, 0, 0.8);
+  line-height: 1;
 `
 
 export const Details = styled.p`
   font-size: 0.8rem;
-  line-height: 1.2;
+  line-height: 1.4;
+  font-weight: 500;
 `
 
 export const SectionHeader = styled.h2`
   margin: 1rem 0;
-  font-size: 1.2rem;
-  font-weight: 300;
-  color: rgba(50, 50, 50, 0.7);
+  font-size: 2rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  color: rgb(0, 0, 0);
+  padding: 2rem;
 `
 
 const LinkContainer = styled.div`

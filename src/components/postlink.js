@@ -14,27 +14,74 @@ const StyledExternalLink = styled.a`
   color: rgba(0, 0, 0, 0.8);
 `
 const Container = styled.div`
-  margin-bottom: 3rem;
   display: flex;
   flex-direction: row;
   align-items: center;
+  margin-bottom: 6rem;
 `
 
 const Content = styled.div`
-  max-width: 26rem;
-  margin: 2rem 0;
+  display: flex;
+`
+
+const TextContainer = styled.div`
+  position: relative;
+`
+
+const DateContainer = styled.div`
+  position: absolute;
+  width: 10rem;
+  top: 11rem;
+  left: -444px;
+  transform-origin: 0 0;
+  transform: rotate(270deg);
+  text-align: right;
+`
+const Motivator = styled.div`
+  position: absolute;
+  width: 10rem;
+  top: 18rem;
+  left: -444px;
+  transform-origin: 0 0;
+  transform: rotate(270deg);
+  text-align: right;
+  font-size: 1rem;
+  font-weight: 900;
+  text-transform: uppercase;
 `
 
 const ImageContainer = styled.div`
-  margin-left: 1rem;
-  padding: 1rem;
-  width: 200px;
+  margin-left: 2rem;
+  width: 400px;
+  position: relative;
+
   ${media.lessThan("medium")`
         display: none;
     `}
+
+  &::after {
+    content: "";
+    transition: opacity 0.5s;
+    mix-blend-mode: saturation;
+    position: absolute;
+    background-color: rgb(250, 250, 250);
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    bottom: 0;
+    opacity: 1;
+  }
+
+  &:hover {
+    &::after {
+      opacity: 0;
+    }
+  }
 `
 
-const StyledImg = styled(Img)``
+const StyledImg = styled(Img)`
+  opacity: 0.8;
+`
 
 const LinkHandler = ({ frontmatter, children }) =>
   frontmatter.externalUrl ? (
@@ -57,22 +104,49 @@ const PostLink = ({ post }) => {
   return (
     <Container>
       <Content>
-        <LinkHandler {...post}>
-          <Title>{post.frontmatter.title}</Title>
-        </LinkHandler>
-        <Date>{post.frontmatter.date}</Date>
+        {featuredImgFluid && (
+          <LinkHandler {...post}>
+            <ImageContainer>
+              <StyledImg fluid={featuredImgFluid} />
+            </ImageContainer>
+          </LinkHandler>
+        )}
 
-        <LinkHandler {...post}>
-          <Summary>{post.excerpt || post.content.subtitle}</Summary>
-        </LinkHandler>
+        <TextContainer>
+          <DateContainer>
+            <Date>{post.frontmatter.date}</Date>
+          </DateContainer>
+          {post.frontmatter.motivator && (
+            <Motivator>{post.frontmatter.motivator}</Motivator>
+          )}
+          <LinkHandler {...post}>
+            <Title
+              style={{
+                position: "relative",
+                left: "-10rem",
+                top: "4rem",
+                color: "rgba(215, 20, 6, 1)",
+                mixBlendMode: "darken",
+              }}
+            >
+              {post.frontmatter.title}
+            </Title>
+          </LinkHandler>
+
+          <LinkHandler {...post}>
+            <Summary
+              style={{
+                maxWidth: "30rem",
+                position: "relative",
+                marginLeft: "1rem",
+                marginTop: "5rem",
+              }}
+            >
+              {post.excerpt || post.content.subtitle}
+            </Summary>
+          </LinkHandler>
+        </TextContainer>
       </Content>
-      {featuredImgFluid && (
-        <LinkHandler {...post}>
-          <ImageContainer>
-            <StyledImg fluid={featuredImgFluid} />
-          </ImageContainer>
-        </LinkHandler>
-      )}
     </Container>
   )
 }
